@@ -1,24 +1,40 @@
 package main
 
 import (
-	"backend/config"
-	"backend/internal/global"
-	"backend/internal/server"
+	"backend/internal/adapter/handler"
+	"backend/internal/adapter/logger"
+	"backend/internal/adapter/repository"
+	"backend/internal/core/service"
+	"backend/internal/core/util"
 	"fmt"
 )
 
 func main() {
-	config, err := config.LoadConfig()
+	config, err := util.LoadConfig()
 	if err != nil {
 		panic(fmt.Sprintf("Fail to load the config: %s", err))
 	}
 
-	global.New(config)
+	logger := logger.NewLogger(config)
 
-	server := server.NewServer()
+	logger.Info().Msg("Initialed Logger")
 
-	err = server.ListenAndServe()
+	service, err := service.NewService(config, logger)
+
 	if err != nil {
-		panic(fmt.Sprintf("cannot start server: %s", err))
+		logger.Fatal().Err(err).Msg("Fail to initialize services")
+	}
+	logger.Info().Msg("Initialed Services")
+
+	repo, err := repository.NewRepository(config, logger)
+	if err != nil {
+		logger.Fatal().Err(err).Msg("Fail to initialize repository")
+	}
+	logger.Info().Msg("Initialed Repository")
+
+	server := handler.NewServer(config, service, logger, repo)
+
+	if err = server.Start(); err != nil {
+		logger.Fatal().Err(err).Msg("failed to load service")
 	}
 }
