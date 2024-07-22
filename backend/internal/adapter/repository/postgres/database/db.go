@@ -1,6 +1,7 @@
 package database
 
 import (
+	"backend/internal/adapter/repository/postgres/database/migration"
 	"backend/internal/core/port"
 	"backend/internal/core/util"
 	"fmt"
@@ -24,6 +25,10 @@ func New(config util.Config, logger port.Logger) (*DB, error) {
 	}
 
 	if database.db, err = database.connect(); err != nil {
+		return nil, err
+	}
+
+	if err = migration.Migrate(database.db); err != nil {
 		return nil, err
 	}
 
