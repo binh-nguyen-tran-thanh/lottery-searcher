@@ -52,6 +52,10 @@ func (s *Server) setUpRouter() {
 	r.GET("/ping", s.Pong)
 	r.GET("/health", s.Heathy)
 
+	regionGroup := r.Group("/region")
+
+	regionGroup.GET("/", s.GetAllRegion)
+
 	s.router = r
 }
 

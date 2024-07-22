@@ -1,5 +1,7 @@
 package port
 
+import "backend/internal/core/domain"
+
 type RegionRepository interface {
-	GetRegions()
+	GetRegions() ([]domain.Region, error)
 }

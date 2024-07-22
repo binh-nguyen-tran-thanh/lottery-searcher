@@ -1,8 +1,10 @@
 package postgres
 
 import (
+	"backend/internal/adapter/repository/postgres/models"
+	"backend/internal/core/domain"
 	"backend/internal/core/port"
-	"fmt"
+	"backend/internal/core/util/exception"
 
 	"gorm.io/gorm"
 )
@@ -17,6 +19,19 @@ func NewRegionRepo(db *gorm.DB) port.RegionRepository {
 	}
 }
 
-func (r regionRepo) GetRegions() {
-	fmt.Print("Place holder")
+func (r regionRepo) GetRegions() (results []domain.Region, err error) {
+	var regions []models.Region
+	r.db.Debug()
+
+	result := r.db.Find(&regions)
+
+	if result.Error != nil {
+		return nil, exception.Into(result.Error)
+	}
+
+	for _, region := range regions {
+		results = append(results, region.ToDomain())
+	}
+
+	return results, nil
 }

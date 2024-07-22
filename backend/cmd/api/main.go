@@ -19,18 +19,18 @@ func main() {
 
 	logger.Info().Msg("Initialed Logger")
 
-	service, err := service.NewService(config, logger)
-
-	if err != nil {
-		logger.Fatal().Err(err).Msg("Fail to initialize services")
-	}
-	logger.Info().Msg("Initialed Services")
-
 	repo, err := repository.NewRepository(config, logger)
 	if err != nil {
 		logger.Fatal().Err(err).Msg("Fail to initialize repository")
 	}
 	logger.Info().Msg("Initialed Repository")
+
+	service, err := service.NewService(config, logger, repo)
+
+	if err != nil {
+		logger.Fatal().Err(err).Msg("Fail to initialize services")
+	}
+	logger.Info().Msg("Initialed Services")
 
 	server := handler.NewServer(config, service, logger, repo)
 

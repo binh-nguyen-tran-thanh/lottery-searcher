@@ -28,7 +28,9 @@ func New(config util.Config, logger port.Logger) (*DB, error) {
 		return nil, err
 	}
 
-	if err = migration.Migrate(database.db); err != nil {
+	migrator := migration.New(database.db, logger)
+
+	if err = migrator.Start(); err != nil {
 		return nil, err
 	}
 
