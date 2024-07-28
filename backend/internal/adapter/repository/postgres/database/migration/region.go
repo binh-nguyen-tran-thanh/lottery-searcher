@@ -43,6 +43,10 @@ func (m *Migration) SeedRegions() (int, error) {
 		return 0, err
 	}
 
+	for idx := range regions {
+		regions[idx].IsActive = true
+	}
+
 	result := regionModel.Create(regions)
 
 	if result.Error != nil {
