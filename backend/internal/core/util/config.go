@@ -18,12 +18,19 @@ type Config struct {
 		Host string `mapstructure:"HOST"`
 		Port string `mapstructure:"PORT"`
 	} `mapstructure:"SERVER"`
+	CronJob struct {
+		LotteryDomain string            `mapstructure:"DOMAIN"`
+		Limit         int16             `mapstructure:"LIMIT"`
+		Delay         int16             `mapstructure:"DELAY"`
+		Schedule      map[string]string `mapstructure:"SCHEDULE"`
+	} `mapstructure:"JOB"`
 }
 
 func LoadConfig() (config Config, err error) {
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath(".")
+
 	viper.AutomaticEnv()
 
 	err = viper.ReadInConfig()

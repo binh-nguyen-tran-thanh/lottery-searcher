@@ -1,15 +1,21 @@
 package domain
 
+import "time"
+
 type Region struct {
-	Name     string
-	Code     string
-	IsActive bool
+	ID           uint
+	Name         string
+	Code         string
+	IsActive     bool
+	NextOpenTime time.Time
 }
 
 func NewRegion(arg Region) *Region {
 	return &Region{
-		Name:     arg.Name,
-		Code:     arg.Code,
-		IsActive: arg.IsActive,
+		ID:           arg.ID,
+		Name:         arg.Name,
+		Code:         arg.Code,
+		IsActive:     arg.IsActive,
+		NextOpenTime: arg.NextOpenTime,
 	}
 }

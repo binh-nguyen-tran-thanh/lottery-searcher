@@ -45,15 +45,13 @@ func (s *Server) setUpRouter() {
 	r.NoMethod(func(ctx *gin.Context) {
 		ctx.JSON(http.StatusMethodNotAllowed, gin.H{"message": "no method provided"})
 	})
-	r.GET("/", func(ctx *gin.Context) {
-		ctx.JSON(http.StatusOK, gin.H{"message": "Hello World!"})
-	})
 
 	r.GET("/ping", s.Pong)
 	r.GET("/health", s.Heathy)
 
-	regionGroup := r.Group("/region")
+	versionOne := r.Group("/v1")
 
+	regionGroup := versionOne.Group("/region")
 	regionGroup.GET("/", s.GetAllRegion)
 
 	s.router = r

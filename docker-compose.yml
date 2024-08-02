@@ -1,0 +1,11 @@
+version: "3.8"
+
+include:
+  - infra.yml
+services:
+  job:
+    depends_on:
+      - psql
+    build:
+      context: backend
+      dockerfile: ./Dockerfile.cron

@@ -24,7 +24,7 @@ func New(db *gorm.DB, logger port.Logger) *Migration {
 
 func (m Migration) Start() error {
 	m.logger.Info().Msg("Start Migration ...")
-	if err := m.db.AutoMigrate(&models.Region{}); err != nil {
+	if err := m.db.AutoMigrate(&models.Region{}, &models.Result{}); err != nil {
 		return err
 	}
 

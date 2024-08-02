@@ -6,16 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type RegionResponse struct {
-	Name     string `json:"name"`
-	Code     string `json:"code"`
-	IsActive string `json:"isActive"`
-}
-
-type AllRegionResponse struct {
-	Regions []RegionResponse `json:"regions"`
-}
-
 func (s Server) GetAllRegion(c *gin.Context) {
 	regions, err := s.service.Region().GetAllRegion()
 	if err != nil {
@@ -24,7 +14,7 @@ func (s Server) GetAllRegion(c *gin.Context) {
 		return
 	}
 
-	res := NewSuccessResponse(regions)
+	res := NewSuccessResponse(serializeRegion(regions))
 
 	c.JSON(http.StatusOK, res)
 }

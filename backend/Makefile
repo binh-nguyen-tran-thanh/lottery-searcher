@@ -5,14 +5,23 @@ all: build
 
 build:
 	@echo "Building..."
-	
-	
+
+
 	@go build -o main cmd/api/main.go
+
+build-cron:
+	@echo "Building..."
+
+
+	@go build -o job cmd/cron_jobs/main.go
 
 # Run the application
 run:
 	@go run cmd/api/main.go
 
+# Run the cronjob
+run-job:
+	@go run cmd/cron_jobs/main.go
 
 # Create DB container
 docker-run:
