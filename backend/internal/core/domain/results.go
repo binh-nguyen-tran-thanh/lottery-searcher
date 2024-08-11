@@ -36,6 +36,7 @@ type OpenNum struct {
 	ResultID uint
 	Numbs    string
 	Rank     int8
+	Result   Result
 }
 
 func NewOpenNum(arg OpenNum) *OpenNum {
@@ -44,5 +45,6 @@ func NewOpenNum(arg OpenNum) *OpenNum {
 		ResultID: arg.ResultID,
 		Numbs:    arg.Numbs,
 		Rank:     arg.Rank,
+		Result:   arg.Result,
 	}
 }
