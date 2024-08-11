@@ -12,7 +12,6 @@ type CronJob struct {
 	repository port.Repository
 	logger     port.Logger
 	cron       *cron.Cron
-	channel    chan int
 }
 
 func NewJob(config util.Config, repository port.Repository, logger port.Logger, channel chan int) port.CronJob {

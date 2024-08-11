@@ -9,7 +9,7 @@ import (
 
 type Regions = []*models.Region
 
-func (m *Migration) SeedRegions() (int, error) {
+func (m *Migration) SeedRegions() int {
 	defer m.wg.Done()
 
 	var count int64
@@ -20,7 +20,7 @@ func (m *Migration) SeedRegions() (int, error) {
 
 	if count > 0 {
 		m.logger.Info().Msg("Skip seeding region because of data have already existed")
-		return int(count), nil
+		return int(count)
 	}
 
 	m.logger.Info().Msg("Reading Region Config file")
@@ -32,15 +32,15 @@ func (m *Migration) SeedRegions() (int, error) {
 	jsonContent, err := os.ReadFile(filePath)
 
 	if err != nil {
-		m.logger.Error().Msgf("Fail to read seeding file. Reason: %s", err.Error())
-		return 0, err
+		m.logger.Fatal().Msgf("Fail to read seeding file. Reason: %s", err.Error())
+		return 0
 	}
 
 	var regions Regions
 
 	if err := json.Unmarshal(jsonContent, &regions); err != nil {
-		m.logger.Error().Msgf("Fail to parse seed file to json. Reason: %s", err.Error())
-		return 0, err
+		m.logger.Fatal().Msgf("Fail to parse seed file to json. Reason: %s", err.Error())
+		return 0
 	}
 
 	for idx := range regions {
@@ -50,11 +50,11 @@ func (m *Migration) SeedRegions() (int, error) {
 	result := regionModel.Create(regions)
 
 	if result.Error != nil {
-		m.logger.Error().Msgf("Fail to insert to database. Reason: %s", result.Error.Error())
-		return 0, result.Error
+		m.logger.Fatal().Msgf("Fail to insert to database. Reason: %s", result.Error.Error())
+		return 0
 	}
 
 	m.logger.Info().Msgf("Seeded %d regions to database", result.RowsAffected)
 
-	return int(result.RowsAffected), nil
+	return int(result.RowsAffected)
 }

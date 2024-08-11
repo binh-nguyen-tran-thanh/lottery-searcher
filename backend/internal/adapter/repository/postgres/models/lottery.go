@@ -20,8 +20,9 @@ func (r Result) ToDomain() domain.Result {
 		TurnNum:  r.TurnNum,
 		OpenNum:  r.OpenNum,
 		OpenTime: r.OpenTime,
-		Detail:   r.Detail,
 		Region:   r.Region,
+		Detail:   r.Detail,
+		ID:       r.ID,
 	}
 }
 
@@ -30,7 +31,7 @@ func AsResult(r domain.Result) Result {
 		TurnNum:  r.TurnNum,
 		OpenNum:  r.OpenNum,
 		OpenTime: r.OpenTime,
-		Detail:   r.Detail,
 		Region:   r.Region,
+		Detail:   r.Detail,
 	}
 }

@@ -10,6 +10,7 @@ import (
 
 type postgresRepo struct {
 	db          *gorm.DB
+	logger      port.Logger
 	regionRepo  port.RegionRepository
 	lotteryRepo port.LotteryRepository
 }
@@ -20,14 +21,15 @@ func NewPostgresRepo(config util.Config, logger port.Logger) (port.Repository, e
 		return nil, err
 	}
 
-	return create(db.Database()), nil
+	return create(db.Database(), logger), nil
 }
 
-func create(db *gorm.DB) port.Repository {
+func create(db *gorm.DB, logger port.Logger) port.Repository {
 	return postgresRepo{
 		db:          db,
 		regionRepo:  NewRegionRepo(db),
-		lotteryRepo: NewLotteryRepo(db),
+		lotteryRepo: NewLotteryRepo(db, logger),
+		logger:      logger,
 	}
 }
 

@@ -10,18 +10,20 @@ import (
 )
 
 type lotteryRepo struct {
-	db *gorm.DB
+	db     *gorm.DB
+	logger port.Logger
 }
 
-func NewLotteryRepo(db *gorm.DB) port.LotteryRepository {
+func NewLotteryRepo(db *gorm.DB, logger port.Logger) port.LotteryRepository {
 	return lotteryRepo{
-		db: db,
+		db:     db,
+		logger: logger,
 	}
 }
 
-func (l lotteryRepo) SyncResult(result []domain.Result) (int, error) {
+func (l lotteryRepo) SyncResult(result []domain.Result) (returnValues []domain.Result, err error) {
 	if len(result) <= 0 {
-		return 0, exception.New(exception.TypeInternal, "Empty result", nil)
+		return nil, exception.New(exception.TypeInternal, "Empty result", nil)
 	}
 
 	var resultToSave []models.Result
@@ -33,8 +35,42 @@ func (l lotteryRepo) SyncResult(result []domain.Result) (int, error) {
 	res := l.db.Create(&resultToSave)
 
 	if err := res.Error; err != nil {
-		return 0, exception.New(exception.TypeInternal, "Fail to save result", err)
+		return nil, exception.New(exception.TypeInternal, "Fail to save result", err)
 	}
 
-	return int(res.RowsAffected), nil
+	for _, v := range resultToSave {
+		returnValues = append(returnValues, v.ToDomain())
+	}
+
+	return returnValues, nil
+}
+
+func (l lotteryRepo) SaveOpenNumb(data []domain.OpenNum) error {
+	if len(data) <= 0 {
+		return exception.New(exception.TypeNotFound, "Empty value", nil)
+	}
+
+	var valueToSave []models.OpenNumb
+
+	for _, v := range data {
+		valueToSave = append(valueToSave, models.AsOpenNumb(v))
+	}
+
+	result := l.db.Create(valueToSave)
+
+	if result.Error != nil {
+		return exception.New(exception.TypeInternal, "Fail to save", result.Error)
+	}
+
+	return nil
+}
+
+func (l lotteryRepo) DeleteResult(result domain.Result) error {
+	res := l.db.Delete(&result)
+
+	if res.Error != nil {
+		return exception.New(exception.TypeInternal, "Delete failed", res.Error)
+	}
+
+	return nil
 }

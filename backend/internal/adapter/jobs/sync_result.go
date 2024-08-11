@@ -60,7 +60,9 @@ func (c *CronJob) retrieveLotteryResult(wg *sync.WaitGroup, region domain.Region
 	}
 
 	externalResults := ExternalAPIResponse{}
-	json.Unmarshal(body, &externalResults)
+	if err := json.Unmarshal(body, &externalResults); err != nil {
+		c.logger.Fatal().Msgf("Parse response failed for region %s", region.Name, err.Error())
+	}
 
 	if !externalResults.Success {
 		c.logger.Fatal().Msgf(errorFormat, region.Name, externalResults.Msg)
@@ -78,17 +80,48 @@ func (c *CronJob) retrieveLotteryResult(wg *sync.WaitGroup, region domain.Region
 				TurnNum:  issue.TurnNum,
 				OpenNum:  issue.OpenNum,
 				OpenTime: issue.OpenTime,
-				Detail:   issue.Detail,
 				Region:   regionCode,
+				Detail:   issue.Detail,
 			},
 		)
 	}
 
-	if _, err := c.repository.Lottery().SyncResult(resultToSave); err != nil {
+	savedResults, err := c.repository.Lottery().SyncResult(resultToSave)
+
+	if err != nil {
 		c.logger.Fatal().Msgf(errorFormat, region.Name, err.Error())
 	}
 
 	c.logger.Info().Msgf("Saved result for %v region", region.Name)
+
+	var numberToSave []domain.OpenNum
+
+	for _, v := range savedResults {
+		var details []string
+		if err := json.Unmarshal([]byte(v.Detail), &details); err != nil {
+			c.logger.Fatal().Msgf("Parse Detail failed", region.Name, err.Error())
+		}
+
+		if len(details) < 8 {
+			if err := c.repository.Lottery().DeleteResult(v); err != nil {
+				c.logger.Info().Msgf("Delete region %s due to not enough result", region.Name, err.Error())
+			}
+		} else {
+			for rank, detail := range details {
+				numberToSave = append(numberToSave, domain.OpenNum{
+					ResultID: v.ID,
+					Numbs:    detail,
+					Rank:     int8(rank),
+				})
+			}
+		}
+	}
+
+	if err := c.repository.Lottery().SaveOpenNumb(numberToSave); err != nil {
+		c.logger.Fatal().Msgf("Fail to update open numbs for %v. Reason: %v", region.Name, err.Error())
+	}
+
+	c.logger.Info().Msgf("Update open numbs for %v region", region.Name)
 
 	if _, err := c.repository.Region().UpdateRegionOpenTime(region.ID, externalResults.T.OpenTime); err != nil {
 		c.logger.Fatal().Msgf("Fail to update turn num for %v. Reason: %v", region.Name, err.Error())
@@ -111,7 +144,7 @@ func (c *CronJob) StartSyncResult() {
 	for _, region := range regions {
 		wg.Add(1)
 		go c.retrieveLotteryResult(&wg, region)
-		time.Sleep(time.Duration(c.config.CronJob.Delay) * time.Minute)
+		time.Sleep(time.Duration(c.config.CronJob.Delay) * time.Millisecond)
 	}
 
 	wg.Wait()
