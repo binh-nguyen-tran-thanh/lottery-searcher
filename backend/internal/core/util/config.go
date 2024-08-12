@@ -8,11 +8,12 @@ import (
 
 type Config struct {
 	Database struct {
-		Host     string `mapstructure:"HOST"`
-		User     string `mapstructure:"USER"`
-		Password string `mapstructure:"PASSWORD"`
-		Name     string `mapstructure:"NAME"`
-		Port     string `mapstructure:"PORT"`
+		Host      string `mapstructure:"HOST"`
+		User      string `mapstructure:"USER"`
+		Password  string `mapstructure:"PASSWORD"`
+		Name      string `mapstructure:"NAME"`
+		Port      string `mapstructure:"PORT"`
+		EnableLog bool   `mapstructure:"ENABLELOG"`
 	} `mapstructure:"DATABASE"`
 	Server struct {
 		Host string `mapstructure:"HOST"`
@@ -23,6 +24,7 @@ type Config struct {
 		Limit         int16             `mapstructure:"LIMIT"`
 		Delay         int16             `mapstructure:"DELAY"`
 		Schedule      map[string]string `mapstructure:"SCHEDULE"`
+		SkipTimeCheck bool              `mapstructure:"SKIP"`
 	} `mapstructure:"JOB"`
 }
 

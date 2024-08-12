@@ -7,6 +7,7 @@ import (
 	"backend/internal/core/util/exception"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type lotteryRepo struct {
@@ -32,7 +33,7 @@ func (l lotteryRepo) SyncResult(result []domain.Result) (returnValues []domain.R
 		resultToSave = append(resultToSave, models.AsResult(result[idx]))
 	}
 
-	res := l.db.Create(&resultToSave)
+	res := l.db.Debug().Create(&resultToSave)
 
 	if err := res.Error; err != nil {
 		return nil, exception.New(exception.TypeInternal, "Fail to save result", err)
@@ -56,7 +57,7 @@ func (l lotteryRepo) SaveOpenNumb(data []domain.OpenNum) error {
 		valueToSave = append(valueToSave, models.AsOpenNumb(v))
 	}
 
-	result := l.db.Create(valueToSave)
+	result := l.db.Debug().Omit(clause.Associations).Create(valueToSave)
 
 	if result.Error != nil {
 		return exception.New(exception.TypeInternal, "Fail to save", result.Error)

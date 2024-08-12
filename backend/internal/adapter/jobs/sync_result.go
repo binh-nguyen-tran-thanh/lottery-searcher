@@ -100,7 +100,7 @@ func (c *CronJob) retrieveLotteryResult(wg *sync.WaitGroup, region domain.Region
 	var resultToSave []domain.Result
 
 	for _, issue := range externalResults.T.IssueList {
-		if isOpenBeforeToday, _ := util.IsBeforeNow(issue.OpenTime, util.OpenDateFormat); !isOpenBeforeToday {
+		if isOpenBeforeToday, _ := util.IsBeforeNow(issue.OpenTime, util.OpenDateFormat); !isOpenBeforeToday && !c.config.CronJob.SkipTimeCheck {
 			c.logger.Info().Msgf("Skip saving %v because the open turn was not complete. Date: %s", region.Name, issue.OpenTime)
 			continue
 		}
