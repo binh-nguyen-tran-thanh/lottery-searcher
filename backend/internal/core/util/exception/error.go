@@ -3,6 +3,7 @@ package exception
 const (
 	TypeInternal = "InternalError"
 	TypeNotFound = "NotFoundError"
+	DataError    = "DataError"
 )
 
 type Err = map[string][]string

@@ -1,7 +1,8 @@
-version: "3.8"
+version: "3"
 
 services:
   psql:
+    container_name: psql
     image: postgres:latest
     environment:
       POSTGRES_DB: ${DB_DATABASE}

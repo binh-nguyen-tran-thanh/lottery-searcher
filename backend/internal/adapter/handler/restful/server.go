@@ -54,6 +54,11 @@ func (s *Server) setUpRouter() {
 	regionGroup := versionOne.Group("/region")
 	regionGroup.GET("/", s.GetAllRegion)
 
+	resultGroup := versionOne.Group("/result")
+	resultGroup.GET("/today", s.GetTodayResult)
+	resultGroup.GET("/filter", s.FilterResult)
+	resultGroup.GET("/open-numb/filter", s.FilterOpenNumb)
+
 	s.router = r
 }
 

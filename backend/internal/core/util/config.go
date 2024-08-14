@@ -7,7 +7,8 @@ import (
 )
 
 type Config struct {
-	Database struct {
+	Environment string `mapstructure:"ENV"`
+	Database    struct {
 		Host      string `mapstructure:"HOST"`
 		User      string `mapstructure:"USER"`
 		Password  string `mapstructure:"PASSWORD"`

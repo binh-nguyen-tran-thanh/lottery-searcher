@@ -15,6 +15,7 @@ type services struct {
 	property      serviceProperty
 	pingService   port.IPing
 	regionService port.RegionServicer
+	resultService port.ResultService
 }
 
 func NewService(config util.Config, logger port.Logger, repo port.Repository) (port.Service, error) {
@@ -28,6 +29,7 @@ func NewService(config util.Config, logger port.Logger, repo port.Repository) (p
 		property:      property,
 		pingService:   NewPingService(property),
 		regionService: NewRegionService(property),
+		resultService: NewResultService(property),
 	}
 
 	return svc, nil
@@ -39,4 +41,8 @@ func (s services) Ping() port.IPing {
 
 func (s services) Region() port.RegionServicer {
 	return s.regionService
+}
+
+func (s services) Result() port.ResultService {
+	return s.resultService
 }

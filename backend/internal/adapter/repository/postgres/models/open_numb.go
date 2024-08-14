@@ -14,12 +14,13 @@ type OpenNumb struct {
 	Rank     int8 `gorm:"index"`
 }
 
-func (r OpenNumb) OpenNumb() domain.OpenNum {
+func (r OpenNumb) ToDomain() domain.OpenNum {
 	return domain.OpenNum{
 		ID:       r.ID,
 		ResultID: r.ResultID,
 		Numbs:    r.Numbs,
 		Rank:     r.Rank,
+		Result:   r.Result.ToDomain(),
 	}
 }
 

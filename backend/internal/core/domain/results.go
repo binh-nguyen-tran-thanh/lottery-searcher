@@ -4,11 +4,12 @@ const (
 	RankSpecial = 0
 	RankFirst   = 1
 	RankSecond  = 2
-	RankForth   = 3
-	RankFifth   = 4
-	RankSixth   = 5
-	RankSeventh = 6
-	RankEighth  = 7
+	RankThird   = 3
+	RankForth   = 4
+	RankFifth   = 5
+	RankSixth   = 6
+	RankSeventh = 7
+	RankEighth  = 8
 )
 
 type Result struct {

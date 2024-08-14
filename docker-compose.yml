@@ -1,11 +1,55 @@
-version: "3.8"
+version: "3"
 
 include:
   - infra.yml
 services:
   job:
+    container_name: cron-job
     depends_on:
       - psql
     build:
       context: backend
       dockerfile: ./Dockerfile.cron
+    develop:
+      watch:
+        - path: ./backend/cmd/cron_jobs
+          action: rebuild
+        - path: ./backend/internal/core
+          action: rebuild
+        - path: ./backend/internal/adapter/jobs
+          action: rebuild
+        - path: ./backend/internal/adapter/logger
+          action: rebuild
+        - path: ./backend/internal/adapter/repository
+          action: rebuild
+        - path: ./backend/go.mod
+          action: rebuild
+        - path: ./backend/config.prod.yaml
+          action: sync+restart
+          target: /config.yaml
+  api:
+    container_name: api
+    depends_on:
+      - psql
+    build:
+      context: backend
+      dockerfile: ./Dockerfile
+    develop:
+      watch:
+        - path: ./backend/cmd/api
+          action: rebuild
+        - path: ./backend/internal/core
+          action: rebuild
+        - path: ./backend/internal/adapter/logger
+          action: rebuild
+        - path: ./backend/internal/adapter/handler
+          action: rebuild
+        - path: ./backend/internal/adapter/repository
+          action: rebuild
+        - path: ./backend/go.mod
+          action: rebuild
+        - path: ./backend/config.prod.yaml
+          action: sync+restart
+          target: /config.yaml
+    ports:
+      - "8080:8080"
