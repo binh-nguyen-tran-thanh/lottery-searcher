@@ -12,9 +12,10 @@ type CronJob struct {
 	repository port.Repository
 	logger     port.Logger
 	cron       *cron.Cron
+	isPureJob  bool
 }
 
-func NewJob(config util.Config, repository port.Repository, logger port.Logger, channel chan int) port.CronJob {
+func NewJob(config util.Config, repository port.Repository, logger port.Logger) port.CronJob {
 	c := cron.New()
 
 	cronJob := CronJob{
@@ -34,18 +35,39 @@ func NewJob(config util.Config, repository port.Repository, logger port.Logger, 
 	return &cronJob
 }
 
-func (c *CronJob) Start() error {
-	c.cron.Start()
+func NewPureJob(config util.Config, repository port.Repository, logger port.Logger) port.CronJob {
+	c := cron.New()
 
+	cronJob := CronJob{
+		config:     config,
+		repository: repository,
+		cron:       c,
+		logger:     logger,
+		isPureJob:  true,
+	}
+
+	return &cronJob
+
+}
+
+func (c *CronJob) Start() error {
 	c.logger.Info().Msg("Staring cron jobs")
+
+	if c.isPureJob {
+		c.StartSyncResult()
+	} else {
+		c.cron.Start()
+	}
 
 	return nil
 }
 
 func (c *CronJob) Stop() error {
-	c.cron.Stop()
-
 	c.logger.Info().Msg("Stopping cron jobs")
+
+	if !c.isPureJob {
+		c.cron.Stop()
+	}
 
 	return nil
 }

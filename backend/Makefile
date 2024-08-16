@@ -19,9 +19,9 @@ build-cron:
 run:
 	@go run cmd/api/main.go
 
-# Run the cronjob
-run-job:
-	@go run cmd/cron_jobs/main.go
+# Run the pure job
+run-isolate-job:
+	@go run cmd/jobs/main.go
 
 # Create DB container
 docker-run:

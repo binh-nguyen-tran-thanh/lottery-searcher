@@ -24,18 +24,13 @@ func main() {
 	}
 	logger.Info().Msg("Initialed Repository")
 
-	chanelLine := make(chan int)
-
-	cron := jobs.NewJob(config, repo, logger, chanelLine)
+	cron := jobs.NewPureJob(config, repo, logger)
 
 	if err := cron.Start(); err != nil {
-		logger.Fatal().Err(err).Msg("Fail to initialize cron job")
+		logger.Fatal().Err(err).Msg("Fail to start cron job")
 	}
-
-	logger.Info().Msg("Initialed Cron Job")
 
 	defer cron.Stop()
 
-	<-chanelLine
 	logger.Info().Msg("Finished sync result")
 }

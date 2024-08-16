@@ -9,10 +9,10 @@ services:
       - psql
     build:
       context: backend
-      dockerfile: ./Dockerfile.cron
+      dockerfile: ./Dockerfile.isolate
     develop:
       watch:
-        - path: ./backend/cmd/cron_jobs
+        - path: ./backend/cmd/jobs
           action: rebuild
         - path: ./backend/internal/core
           action: rebuild

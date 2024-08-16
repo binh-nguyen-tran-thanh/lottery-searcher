@@ -1,0 +1,31 @@
+FROM golang:1.22-alpine AS builder
+
+WORKDIR /app
+COPY ./ ./
+
+RUN go mod download
+RUN GOOS=linux go build -o /job cmd/jobs/main.go
+
+FROM alpine:3.17
+
+RUN apk update && apk add tzdata ca-certificates \
+  && rm -rf /var/cache/apk/*
+
+RUN apk add --no-cache --upgrade bash
+
+ENV TZ=Asia/Saigon
+RUN ln -snf "/usr/share/zoneinfo/$TZ" /etc/localtime && echo "$TZ" > /etc/timezone
+
+WORKDIR /
+
+COPY --from=builder /job /job
+COPY --from=builder /app/script/* /
+
+COPY --from=builder /app/config.prod.yaml /root/config.yaml
+COPY --from=builder /app/internal/adapter/repository/postgres/database/migration/seeders/ /root/internal/adapter/repository/postgres/database/migration/seeders/
+
+RUN chmod 755 /sync-result.sh /entry.sh
+RUN /usr/bin/crontab /crontab.txt
+
+CMD ["/entry.sh"]
+
