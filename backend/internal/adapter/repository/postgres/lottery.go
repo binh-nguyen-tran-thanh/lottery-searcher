@@ -107,14 +107,20 @@ func buildFilterOpenNumbsJoinStatement(payload port.FilterOpenNumbPayload) strin
 
 func buildFilterValueString(payload port.FilterOpenNumbPayload) string {
 	var valuePart []string
+	payloadValuePart := strings.Split(payload.FilterValue, "")
+
+	if len(payloadValuePart) > 3 {
+		payloadValuePart = payloadValuePart[0:3]
+	}
+
 	switch payload.FilterMode {
 	case domain.SearchModeFirstThree:
 		valuePart = append(valuePart, "%",
-			payload.FilterValue,
-			"___%")
+			strings.Join(payloadValuePart, ""),
+			"__%")
 	case domain.SearchModeLastThree:
-		valuePart = append(valuePart, "%___",
-			payload.FilterValue,
+		valuePart = append(valuePart, "%__",
+			strings.Join(payloadValuePart, ""),
 			"%")
 	case domain.SearchModeAll:
 	default:
