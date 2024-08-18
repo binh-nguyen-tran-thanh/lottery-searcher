@@ -26,6 +26,8 @@ type FilterOpenNumbPayload struct {
 	Region          string
 	ID              uint
 	ResultId        uint
+	FilterMode      string
+	FilterValue     string
 }
 
 type LotteryRepository interface {

@@ -1,15 +1,18 @@
 package domain
 
 const (
-	RankSpecial = 0
-	RankFirst   = 1
-	RankSecond  = 2
-	RankThird   = 3
-	RankForth   = 4
-	RankFifth   = 5
-	RankSixth   = 6
-	RankSeventh = 7
-	RankEighth  = 8
+	RankSpecial          = 0
+	RankFirst            = 1
+	RankSecond           = 2
+	RankThird            = 3
+	RankForth            = 4
+	RankFifth            = 5
+	RankSixth            = 6
+	RankSeventh          = 7
+	RankEighth           = 8
+	SearchModeFirstThree = "firstThree"
+	SearchModeLastThree  = "lastThree"
+	SearchModeAll        = "all"
 )
 
 type Result struct {

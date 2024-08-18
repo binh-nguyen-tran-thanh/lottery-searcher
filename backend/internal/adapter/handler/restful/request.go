@@ -18,10 +18,12 @@ type TimeRangeFilter struct {
 type FilterOpenNumbPayload struct {
 	pagingParamPayload
 	TimeRangeFilter
-	FilterTye int    `form:"type"`
-	Region    string `form:"region"`
-	ID        uint   `form:"id"`
-	ResultId  uint   `form:"result_id"`
+	FilterTye   int    `form:"type"`
+	Region      string `form:"region"`
+	ID          uint   `form:"id"`
+	ResultId    uint   `form:"result_id"`
+	FilterMode  string `form:"mode"`
+	FilterValue string `form:"value"`
 }
 
 type FilterResultPayload struct {
@@ -43,6 +45,8 @@ func AsPortFilterOpenNumbPayload(arg FilterOpenNumbPayload) port.FilterOpenNumbP
 			Limit:  arg.Limit,
 			Offset: arg.Offset,
 		},
+		FilterMode:  arg.FilterMode,
+		FilterValue: arg.FilterValue,
 	}
 }
 
