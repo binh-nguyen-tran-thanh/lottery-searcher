@@ -79,11 +79,8 @@ func (l lotteryRepo) DeleteResult(result domain.Result) error {
 	return nil
 }
 
-func (l lotteryRepo) FilterOpenNumbs(payload port.FilterOpenNumbPayload) (returnValues []domain.OpenNum, err error) {
+func buildFilterOpenNumbsJoinStatement(payload port.FilterOpenNumbPayload) string {
 	var joinConditionParts []string
-	var queryParts []string
-
-	limit, offset := util.GeneratePagingParamsWithDefaultValue(payload.Limit, payload.Offset)
 
 	if payload.Region != "" {
 		joinConditionParts = append(joinConditionParts, "results.region = @Region")
@@ -101,6 +98,16 @@ func (l lotteryRepo) FilterOpenNumbs(payload port.FilterOpenNumbPayload) (return
 		joinConditionParts = append(joinConditionParts, "results.open_time between @FilterRangeFrom and @FilterRangeTo")
 	}
 
+	if len(joinConditionParts) > 0 {
+		return strings.Join(joinConditionParts, " and ")
+	}
+
+	return ""
+}
+
+func buildFilterOpenNumbsQueryStatement(payload port.FilterOpenNumbPayload) string {
+	var queryParts []string
+
 	if payload.ID != 0 {
 		queryParts = append(queryParts, "id = @ID")
 	}
@@ -109,24 +116,37 @@ func (l lotteryRepo) FilterOpenNumbs(payload port.FilterOpenNumbPayload) (return
 		queryParts = append(queryParts, "result_id = @ResultId")
 	}
 
+	if len(queryParts) > 0 {
+		return strings.Join(queryParts, " and ")
+	}
+
+	return ""
+}
+
+func (l lotteryRepo) FilterOpenNumbs(payload port.FilterOpenNumbPayload) (returnValues []domain.OpenNum, err error) {
+	limit, offset := util.GeneratePagingParamsWithDefaultValue(payload.Limit, payload.Offset)
+
 	var result []models.OpenNumb
 
 	res := l.db.Model(&models.OpenNumb{})
 
-	joinCondition := strings.Join(joinConditionParts, " and ")
+	joinCondition := buildFilterOpenNumbsJoinStatement(payload)
+	queryString := buildFilterOpenNumbsQueryStatement(payload)
 
 	if joinCondition != "" {
-		res.Joins(fmt.Sprintf("join results on results.id = open_numbs.result_id and %s", joinCondition), map[string]interface{}{
+		joinStatement := fmt.Sprintf("join results on results.id = open_numbs.result_id and %s", joinCondition)
+		joinParams := map[string]interface{}{
 			"Region":          payload.Region,
 			"FilterRangeFrom": util.ToDatabaseFormat(payload.FilterRangeFrom),
 			"FilterRangeTo":   util.ToDatabaseFormat(payload.FilterRangeTo),
-		})
+		}
+
+		res.Joins(fmt.Sprintf(joinStatement, joinParams))
 	} else {
 		res.Joins("Result")
 	}
 
-	if len(queryParts) > 0 {
-		queryString := strings.Join(queryParts, " and ")
+	if queryString != "" {
 		res.Where(queryString, payload)
 	}
 
