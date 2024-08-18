@@ -141,7 +141,7 @@ func (l lotteryRepo) FilterOpenNumbs(payload port.FilterOpenNumbPayload) (return
 			"FilterRangeTo":   util.ToDatabaseFormat(payload.FilterRangeTo),
 		}
 
-		res.Joins(fmt.Sprintf(joinStatement, joinParams))
+		res.Joins(joinStatement, joinParams)
 	} else {
 		res.Joins("Result")
 	}
