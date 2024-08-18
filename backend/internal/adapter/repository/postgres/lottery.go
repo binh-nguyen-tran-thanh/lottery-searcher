@@ -105,6 +105,27 @@ func buildFilterOpenNumbsJoinStatement(payload port.FilterOpenNumbPayload) strin
 	return ""
 }
 
+func buildFilterValueString(payload port.FilterOpenNumbPayload) string {
+	var valuePart []string
+	switch payload.FilterMode {
+	case domain.SearchModeFirstThree:
+		valuePart = append(valuePart, "%",
+			payload.FilterValue,
+			"___%")
+	case domain.SearchModeLastThree:
+		valuePart = append(valuePart, "%___",
+			payload.FilterValue,
+			"%")
+	case domain.SearchModeAll:
+	default:
+		valuePart = append(valuePart, "%",
+			payload.FilterValue,
+			"%")
+	}
+
+	return strings.Join(valuePart, "")
+}
+
 func buildFilterOpenNumbsQueryStatement(payload port.FilterOpenNumbPayload) string {
 	var queryParts []string
 
@@ -114,6 +135,10 @@ func buildFilterOpenNumbsQueryStatement(payload port.FilterOpenNumbPayload) stri
 
 	if payload.ResultId != 0 {
 		queryParts = append(queryParts, "result_id = @ResultId")
+	}
+
+	if payload.FilterValue != "" {
+		queryParts = append(queryParts, "numbs like @FilterValue")
 	}
 
 	if len(queryParts) > 0 {
@@ -146,8 +171,14 @@ func (l lotteryRepo) FilterOpenNumbs(payload port.FilterOpenNumbPayload) (return
 		res.Joins("Result")
 	}
 
+	queryParams := payload
+
+	if payload.FilterValue != "" {
+		queryParams.FilterValue = buildFilterValueString(payload)
+	}
+
 	if queryString != "" {
-		res.Where(queryString, payload)
+		res.Where(queryString, queryParams)
 	}
 
 	res.Preload("Result").Order("rank DESC").Offset(int(offset)).Limit(int(limit)).Find(&result)
