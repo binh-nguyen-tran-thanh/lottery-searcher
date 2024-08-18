@@ -141,6 +141,10 @@ func buildFilterOpenNumbsQueryStatement(payload port.FilterOpenNumbPayload) stri
 		queryParts = append(queryParts, "numbs like @FilterValue")
 	}
 
+	if payload.Ranks != nil {
+		queryParts = append(queryParts, "rank in @Ranks")
+	}
+
 	if len(queryParts) > 0 {
 		return strings.Join(queryParts, " and ")
 	}

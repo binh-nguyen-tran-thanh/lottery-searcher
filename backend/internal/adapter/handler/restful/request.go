@@ -24,6 +24,7 @@ type FilterOpenNumbPayload struct {
 	ResultId    uint   `form:"result_id"`
 	FilterMode  string `form:"mode"`
 	FilterValue string `form:"value"`
+	Ranks       []int  `form:"ranks"`
 }
 
 type FilterResultPayload struct {
@@ -47,6 +48,7 @@ func AsPortFilterOpenNumbPayload(arg FilterOpenNumbPayload) port.FilterOpenNumbP
 		},
 		FilterMode:  arg.FilterMode,
 		FilterValue: arg.FilterValue,
+		Ranks:       arg.Ranks,
 	}
 }
 

@@ -28,6 +28,7 @@ type FilterOpenNumbPayload struct {
 	ResultId        uint
 	FilterMode      string
 	FilterValue     string
+	Ranks           []int
 }
 
 type LotteryRepository interface {
