@@ -59,7 +59,7 @@ func (s Server) FilterOpenNumb(c *gin.Context) {
 		return
 	}
 
-	res := NewSuccessResponse(results)
+	res := NewSuccessResponse(serializeOpenNumList(results))
 
 	c.JSON(http.StatusOK, res)
 }
