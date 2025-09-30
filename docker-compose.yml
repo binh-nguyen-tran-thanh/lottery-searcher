@@ -27,6 +27,9 @@ services:
         - path: ./backend/config.prod.yaml
           action: sync+restart
           target: /config.yaml
+        - path: ./backend/script/crontab.txt
+          action: sync+restart
+          target: /crontab.txt
   api:
     container_name: api
     depends_on:

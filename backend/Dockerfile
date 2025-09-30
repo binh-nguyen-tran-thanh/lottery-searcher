@@ -1,4 +1,4 @@
-FROM golang:1.22-alpine AS builder
+FROM golang:1.23-alpine AS builder
 
 WORKDIR /app
 COPY ./ ./
@@ -10,8 +10,10 @@ FROM debian:12-slim AS release
 
 RUN apt-get update && apt-get install -y --no-install-recommends tzdata && apt-get clean
 ENV TZ=Asia/Saigon
-RUN ln -snf "/usr/share/zoneinfo/$TZ" /etc/localtime && echo "$TZ" > /etc/timezone
-RUN apt-get install -y ca-certificates && apt-get clean
+RUN ln -snf "/usr/share/zoneinfo/$TZ" /etc/localtime \
+	&& echo "$TZ" > /etc/timezone \
+	&& apt-get install -y ca-certificates \
+	&& apt-get clean
 
 WORKDIR /
 
