@@ -66,7 +66,7 @@ func (c *CronJob) retrieveLotteryResult(wg *sync.WaitGroup, region domain.Region
 
 	regionCode := region.Code
 
-	requestUrl := fmt.Sprintf("%v/%v/%v", c.config.CronJob.LotteryDomain, c.config.CronJob.Limit, regionCode)
+	requestUrl := fmt.Sprintf("%v?limitNum=%v&gameCode=%v", c.config.CronJob.LotteryDomain, c.config.CronJob.Limit, regionCode)
 
 	c.logger.Info().Msgf("Retrieving result for %v at %v by %v", region.Name, time.Now().Format(timeFormat), requestUrl)
 

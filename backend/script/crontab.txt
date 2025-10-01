@@ -1,3 +1,4 @@
-50 18 * * * /sync-result.sh
-50 17 * * * /sync-result.sh
-50 16 * * * /sync-result.sh
+35 16 * * * /sync-result.sh
+35 17 * * * /sync-result.sh
+35 18 * * * /sync-result.sh
+
